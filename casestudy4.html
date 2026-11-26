@@ -1,126 +1,319 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Online Student Service Portal</title>
-<style>
-  body{font-family:Arial,sans-serif;background:#f4f6f9;max-width:800px;margin:20px auto;padding:0 15px}
-  h2{color:#0b3d91}
-  .form{background:#fff;padding:18px;border-radius:8px;margin-bottom:15px;display:none}
-  label{display:block;margin-top:10px;font-weight:bold}
-  input,select,textarea{width:100%;padding:8px;margin-top:4px;box-sizing:border-box}
-  .err{color:#c62828;font-size:13px;min-height:16px}
-  .msg{padding:10px;border-radius:5px;margin:10px 0;display:none}
-  .good{background:#c8e6c9;color:#1b5e20}.bad{background:#ffcdd2;color:#b71c1c}
-  button{margin-top:12px;padding:9px 18px;background:#0b3d91;color:#fff;border:0;border-radius:4px;cursor:pointer}
-  table{width:100%;border-collapse:collapse;background:#fff}
-  th,td{border:1px solid #ccc;padding:8px}
-  th{background:#0b3d91;color:#fff}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Online Student Service Portal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 0 15px;
+      color: #222;
+    }
+    h2, h3 { color: #0b3d91; }
+    .card, .form {
+      background: #fff;
+      padding: 18px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+    .form { display: none; }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .checkbox-label {
+      font-weight: normal;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      cursor: pointer;
+    }
+    .checkbox-label input { width: auto; margin: 0; }
+    .err {
+      color: #c62828;
+      font-size: 13px;
+      min-height: 16px;
+      margin-top: 3px;
+    }
+    .msg {
+      padding: 10px 14px;
+      border-radius: 5px;
+      margin: 12px 0;
+      display: none;
+      font-weight: bold;
+    }
+    .good { background: #c8e6c9; color: #1b5e20; border: 1px solid #a5d6a7; }
+    .bad { background: #ffcdd2; color: #b71c1c; border: 1px solid #ef9a9a; }
+    button {
+      margin-top: 12px;
+      padding: 10px 18px;
+      background: #0b3d91;
+      color: #fff;
+      border: 0;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover { background: #082d6b; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+    th { background: #0b3d91; color: #fff; }
+    .empty-row { text-align: center; color: #666; font-style: italic; }
+  </style>
 </head>
 <body>
-<h2>Online Student Service Portal</h2>
-<label for="service">Select Service</label>
-<select id="service" onchange="showForm()">
-  <option value="">-- Choose --</option>
-  <option value="leave">Leave Request</option>
-  <option value="bonafide">Bonafide Certificate</option>
-  <option value="course">Elective Course Registration</option>
-</select>
-<div id="msg" class="msg"></div>
 
-<form id="leave" class="form" onsubmit="return submitLeave()">
-  <h3>Leave Request</h3>
-  <label>Roll Number</label><input id="l_roll" onkeyup="live(this,/^[A-Za-z0-9]{6,12}$/,'Enter a valid roll number')"><div class="err"></div>
-  <label>Leave Type</label><select id="l_type"><option>Medical</option><option>Personal</option><option>Event</option></select>
-  <label>From</label><input type="date" id="l_from">
-  <label>To</label><input type="date" id="l_to">
-  <label>Reason</label><textarea id="l_reason" rows="3"></textarea><div class="err" id="l_err"></div>
-  <button>Submit Leave</button>
-</form>
+  <h2>Online Student Service Portal</h2>
 
-<form id="bonafide" class="form" onsubmit="return submitBonafide()">
-  <h3>Bonafide Certificate</h3>
-  <label>Roll Number</label><input id="b_roll" onkeyup="live(this,/^[A-Za-z0-9]{6,12}$/,'Enter a valid roll number')"><div class="err"></div>
-  <label>Purpose</label><select id="b_purpose"><option>Passport</option><option>Bank</option><option>Scholarship</option></select>
-  <label>Number of Copies</label><input type="number" id="b_copies" value="1"><div class="err" id="b_err"></div>
-  <button>Apply</button>
-</form>
+  <div class="card">
+    <label for="service">Select Service</label>
+    <select id="service">
+      <option value="">-- Choose a Service --</option>
+      <option value="leave">Leave Request</option>
+      <option value="bonafide">Bonafide Certificate</option>
+      <option value="course">Elective Course Registration</option>
+    </select>
+  </div>
 
-<form id="course" class="form" onsubmit="return submitCourse()">
-  <h3>Elective Course Registration (select up to 2)</h3>
-  <div id="courseList"></div>
-  <label>Roll Number</label><input id="c_roll" onkeyup="live(this,/^[A-Za-z0-9]{6,12}$/,'Enter a valid roll number')"><div class="err" id="c_err"></div>
-  <button>Register</button>
-</form>
+  <div id="msg" class="msg"></div>
 
-<h3>My Requests</h3>
-<table id="tbl"><thead><tr><th>Ref No</th><th>Type</th><th>Details</th><th>Status</th></tr></thead><tbody></tbody></table>
+  <!-- Leave Request Form -->
+  <form id="leave" class="form" novalidate>
+    <h3>Leave Request</h3>
+    <label for="l_roll">Roll Number</label>
+    <input id="l_roll" placeholder="e.g., 22CS1045">
+    <div class="err" id="l_roll_err"></div>
 
-<script>
-const requests = [];                                            // array of submitted requests
-const electives = [{n:"Machine Learning",seats:2},{n:"Cyber Security",seats:3},{n:"Cloud Computing",seats:1},{n:"IoT",seats:3}];
-let refNo = 1000;
+    <label for="l_type">Leave Type</label>
+    <select id="l_type">
+      <option>Medical</option>
+      <option>Personal</option>
+      <option>Event</option>
+    </select>
 
-function renderCourses() {
-  document.getElementById("courseList").innerHTML = electives.map((c,i) =>
-    `<label><input type="checkbox" name="el" value="${i}" ${c.seats==0?'disabled':''} style="width:auto"> ${c.n} (seats left: ${c.seats})</label>`).join("");
-}
-renderCourses();
+    <label for="l_from">From</label>
+    <input type="date" id="l_from">
 
-function showForm() {
-  ["leave","bonafide","course"].forEach(id => document.getElementById(id).style.display = "none");
-  const v = document.getElementById("service").value;
-  if (v) document.getElementById(v).style.display = "block";
-}
-function live(el, re, msg) { el.nextElementSibling.innerText = re.test(el.value) ? "" : msg; }
-function notify(text, ok) {
-  const m = document.getElementById("msg");
-  m.className = "msg " + (ok ? "good" : "bad"); m.innerText = text; m.style.display = "block";
-}
-function addRequest(type, details) {
-  const r = { ref: ++refNo, type, details, status: "Pending" };
-  requests.push(r);
-  const body = document.querySelector("#tbl tbody");
-  body.innerHTML = "";
-  requests.forEach(x => body.innerHTML += `<tr><td>${x.ref}</td><td>${x.type}</td><td>${x.details}</td><td>${x.status}</td></tr>`);
-  notify("Submitted successfully. Reference No: " + r.ref, true);
-}
-const rollOk = v => /^[A-Za-z0-9]{6,12}$/.test(v);
+    <label for="l_to">To</label>
+    <input type="date" id="l_to">
 
-function submitLeave() {
-  const roll = l_roll.value.trim(), from = l_from.value, to = l_to.value, reason = l_reason.value.trim();
-  const err = document.getElementById("l_err"), today = new Date().toISOString().split("T")[0];
-  if (!rollOk(roll)) err.innerText = "Invalid roll number.";
-  else if (!from || !to) err.innerText = "Select both dates.";
-  else if (from < today) err.innerText = "Leave cannot start in the past.";
-  else if (to < from) err.innerText = "To-date cannot be before from-date.";
-  else if (reason.length < 10) err.innerText = "Reason must be at least 10 characters.";
-  else { err.innerText = ""; addRequest("Leave", `${roll}: ${l_type.value}, ${from} to ${to}`); return false; }
-  notify("Please correct the errors.", false); return false;
-}
-function submitBonafide() {
-  const roll = b_roll.value.trim(), copies = parseInt(b_copies.value), err = document.getElementById("b_err");
-  if (!rollOk(roll)) err.innerText = "Invalid roll number.";
-  else if (isNaN(copies) || copies < 1 || copies > 5) err.innerText = "Copies must be between 1 and 5.";
-  else { err.innerText = ""; addRequest("Bonafide", `${roll}: ${b_purpose.value}, ${copies} copy(ies)`); return false; }
-  notify("Please correct the errors.", false); return false;
-}
-function submitCourse() {
-  const roll = c_roll.value.trim(), err = document.getElementById("c_err");
-  const chosen = [...document.querySelectorAll('input[name="el"]:checked')].map(x => parseInt(x.value));
-  if (!rollOk(roll)) err.innerText = "Invalid roll number.";
-  else if (chosen.length === 0) err.innerText = "Select at least one course.";
-  else if (chosen.length > 2) err.innerText = "You can select at most 2 courses.";
-  else {
-    err.innerText = "";
-    chosen.forEach(i => electives[i].seats--);
-    addRequest("Course", `${roll}: ` + chosen.map(i => electives[i].n).join(", "));
-    renderCourses(); return false;
-  }
-  notify("Please correct the errors.", false); return false;
-}
-</script>
+    <label for="l_reason">Reason</label>
+    <textarea id="l_reason" rows="3" placeholder="Minimum 10 characters..."></textarea>
+    <div class="err" id="l_err"></div>
+
+    <button type="submit">Submit Leave</button>
+  </form>
+
+  <!-- Bonafide Certificate Form -->
+  <form id="bonafide" class="form" novalidate>
+    <h3>Bonafide Certificate</h3>
+    <label for="b_roll">Roll Number</label>
+    <input id="b_roll" placeholder="e.g., 22CS1045">
+    <div class="err" id="b_roll_err"></div>
+
+    <label for="b_purpose">Purpose</label>
+    <select id="b_purpose">
+      <option>Passport</option>
+      <option>Bank</option>
+      <option>Scholarship</option>
+    </select>
+
+    <label for="b_copies">Number of Copies (1–5)</label>
+    <input type="number" id="b_copies" value="1" min="1" max="5">
+    <div class="err" id="b_err"></div>
+
+    <button type="submit">Apply</button>
+  </form>
+
+  <!-- Elective Course Registration Form -->
+  <form id="course" class="form" novalidate>
+    <h3>Elective Course Registration (Select up to 2)</h3>
+    <div id="courseList"></div>
+
+    <label for="c_roll">Roll Number</label>
+    <input id="c_roll" placeholder="e.g., 22CS1045">
+    <div class="err" id="c_err"></div>
+
+    <button type="submit">Register</button>
+  </form>
+
+  <h3>My Requests</h3>
+  <table id="tbl">
+    <thead>
+      <tr>
+        <th>Ref No</th>
+        <th>Type</th>
+        <th>Details</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td colspan="4" class="empty-row">No requests submitted yet.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <script>
+    const requests = [];
+    const electives = [
+      { n: "Machine Learning", seats: 2 },
+      { n: "Cyber Security", seats: 3 },
+      { n: "Cloud Computing", seats: 1 },
+      { n: "IoT", seats: 3 }
+    ];
+    let refNo = 1000;
+    const rollRegex = /^[A-Za-z0-9]{6,12}$/;
+
+    function renderCourses() {
+      const container = document.getElementById("courseList");
+      container.innerHTML = electives.map((c, i) => `
+        <label class="checkbox-label">
+          <input type="checkbox" name="el" value="${i}" ${c.seats === 0 ? "disabled" : ""}>
+          <span>${c.n} (seats left: ${c.seats})</span>
+        </label>
+      `).join("");
+    }
+
+    function notify(text, ok) {
+      const m = document.getElementById("msg");
+      m.className = "msg " + (ok ? "good" : "bad");
+      m.innerText = text;
+      m.style.display = "block";
+    }
+
+    function addRequest(type, details) {
+      const r = { ref: ++refNo, type, details, status: "Pending" };
+      requests.push(r);
+      const body = document.querySelector("#tbl tbody");
+      body.innerHTML = requests.map(x => `
+        <tr>
+          <td>${x.ref}</td>
+          <td>${x.type}</td>
+          <td>${x.details}</td>
+          <td>${x.status}</td>
+        </tr>
+      `).join("");
+      notify("Submitted successfully. Reference No: " + r.ref, true);
+    }
+
+    ["l_roll", "b_roll"].forEach(id => {
+      const input = document.getElementById(id);
+      const errBox = document.getElementById(id + "_err");
+      input.addEventListener("input", () => {
+        errBox.innerText = rollRegex.test(input.value.trim()) || input.value === ""
+          ? ""
+          : "Enter a valid alphanumeric roll number (6–12 chars)";
+      });
+    });
+
+    document.getElementById("service").addEventListener("change", function () {
+      document.getElementById("msg").style.display = "none";
+      ["leave", "bonafide", "course"].forEach(id => {
+        document.getElementById(id).style.display = "none";
+      });
+      if (this.value) {
+        document.getElementById(this.value).style.display = "block";
+      }
+    });
+
+    document.getElementById("leave").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const roll = document.getElementById("l_roll").value.trim();
+      const type = document.getElementById("l_type").value;
+      const from = document.getElementById("l_from").value;
+      const to = document.getElementById("l_to").value;
+      const reason = document.getElementById("l_reason").value.trim();
+      const err = document.getElementById("l_err");
+      const today = new Date().toISOString().split("T")[0];
+
+      if (!rollRegex.test(roll)) {
+        err.innerText = "Invalid roll number (must be 6–12 alphanumeric characters).";
+      } else if (!from || !to) {
+        err.innerText = "Select both From and To dates.";
+      } else if (from < today) {
+        err.innerText = "Leave cannot start in the past.";
+      } else if (to < from) {
+        err.innerText = "To-date cannot be before From-date.";
+      } else if (reason.length < 10) {
+        err.innerText = "Reason must be at least 10 characters.";
+      } else {
+        err.innerText = "";
+        addRequest("Leave", `${roll}: ${type}, ${from} to ${to}`);
+        this.reset();
+        return;
+      }
+      notify("Please correct the errors below.", false);
+    });
+
+    document.getElementById("bonafide").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const roll = document.getElementById("b_roll").value.trim();
+      const purpose = document.getElementById("b_purpose").value;
+      const copies = parseInt(document.getElementById("b_copies").value, 10);
+      const err = document.getElementById("b_err");
+
+      if (!rollRegex.test(roll)) {
+        err.innerText = "Invalid roll number (must be 6–12 alphanumeric characters).";
+      } else if (isNaN(copies) || copies < 1 || copies > 5) {
+        err.innerText = "Copies must be between 1 and 5.";
+      } else {
+        err.innerText = "";
+        addRequest("Bonafide", `${roll}: ${purpose}, ${copies} copy(ies)`);
+        this.reset();
+        return;
+      }
+      notify("Please correct the errors below.", false);
+    });
+
+    document.getElementById("course").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const roll = document.getElementById("c_roll").value.trim();
+      const err = document.getElementById("c_err");
+      const chosen = [...document.querySelectorAll('input[name="el"]:checked')].map(x => parseInt(x.value, 10));
+
+      if (!rollRegex.test(roll)) {
+        err.innerText = "Invalid roll number (must be 6–12 alphanumeric characters).";
+      } else if (chosen.length === 0) {
+        err.innerText = "Select at least one course.";
+      } else if (chosen.length > 2) {
+        err.innerText = "You can select at most 2 courses.";
+      } else {
+        err.innerText = "";
+        chosen.forEach(i => electives[i].seats--);
+        addRequest("Course", `${roll}: ` + chosen.map(i => electives[i].n).join(", "));
+        this.reset();
+        renderCourses();
+        return;
+      }
+      notify("Please correct the errors below.", false);
+    });
+
+    renderCourses();
+  </script>
 </body>
 </html>
